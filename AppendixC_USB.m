@@ -1,8 +1,8 @@
 % Resistor Estimation Lab-USB
 close all;clear all;clc
-DMM=visa('agilent','USB0::0x2A8D::0xB318::MY58160107::0::INSTR');
-awg=visa('agilent','USB0::0x0957::0x0407::MY44043483::0::INSTR');
-scope=visa('agilent','USB0::0x0957::0x1799::MY58100818::0::INSTR');
+DMM=visa('agilent', 'USB0::0x2A8D::0xB318::MY58160068::0::INSTR');
+awg=visa('agilent', 'USB0::0x0957::0x0407::MY44043475::0::INSTR');
+scope=visa('agilent', 'USB0::0x0957::0x1799::MY58100823::0::INSTR');
 
 % Inputs
 pulse_frequency=1400;
@@ -11,8 +11,8 @@ dutycycle=[20:5:80,75:-5:20];
 volts_per_division=2;
 time_range='3E-3';
 
-scope.InputBufferSize=2ˆ17;
-scope.OutputBufferSize=2ˆ17;
+scope.InputBufferSize=2^17;
+scope.OutputBufferSize=2^17;
 
 % Open instruments
 fopen(awg);
@@ -46,16 +46,16 @@ fprintf(scope,'WAV:POIN 2000');
 fprintf(scope,':WAVEFORM:BYTEORDER LSBFirst');
 
 for I=1:length(dutycycle)
-fprintf(awg,'PULSE:DCYC %i',dutycycle(I));
-fprintf(scope,'DIG CHAN1;');
-operationComplete = str2double(query(scope,'*OPC?'));
-while ˜operationComplete
-operationComplete = str2double(query(scope,'*OPC?'));
-end
-preambleBlock = query(scope,':WAVEFORM:PREAMBLE?');
-fprintf(scope,'WAV:DATA?;');
-data(:,I)=binblockread(scope,'uint16'); fread(scope,1);
-f(I)=str2double(query(scope,':MEAS:FREQUENCY?'));
+    fprintf(awg,'PULSE:DCYC %i',dutycycle(I));
+    fprintf(scope,'DIG CHAN1;');
+    operationComplete = str2double(query(scope,'*OPC?'));
+    while ~operationComplete
+        operationComplete = str2double(query(scope,'*OPC?'));
+    end
+    preambleBlock = query(scope,':WAVEFORM:PREAMBLE?');
+    fprintf(scope,'WAV:DATA?;');
+    data(:,I)=binblockread(scope,'uint16'); fread(scope,1);
+    f(I)=str2double(query(scope,':MEAS:FREQUENCY?'));
 end
 
 % Convert dat from binary representation to actual voltage
@@ -76,5 +76,23 @@ fclose(awg);
 fclose(scope);
 delete(awg);
 delete(scope);
-figure
+figure(1)
 plot(t,dat_volts)
+xlabel('Time (seconds)')
+ylabel('Voltage')
+title('On Time vs. Duty Cycle')
+grid on
+
+
+on_time = zeros(size(dutycycle));
+for i = 1:length(on_time)
+   on_time(i) = sum(dat_volts(1:716, i) > 2.5) * 0.000001;
+end
+
+figure(2)
+plot(on_time,dutycycle,'o')
+xlabel('On Time (seconds)')
+ylabel('Duty Cycle (%)')
+title('On Time vs. Duty Cycle')
+legend('On Time vs. Duty Cycle')
+grid on
