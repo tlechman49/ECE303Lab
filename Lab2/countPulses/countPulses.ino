@@ -39,7 +39,6 @@ void loop() {
   // print the string when a newline arrives:
   if (stringComplete) {
     Serial.println(inputString);
-    Serial.println();
     Serial.println(countsPerSecond);
     
     // clear the string:
