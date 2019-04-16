@@ -1,4 +1,9 @@
-close all;clear all;clc;
+close all;clear all;clc
+
+% Inputs
+V_min=0; % Lower DC Voltage (V)
+V_max=5; % Upper DC voltage (V);
+N_volts=51; % Number of voltages to cycle through
 
 volts_per_division=2;
 time_range='3E-3';
@@ -31,8 +36,7 @@ fprintf(scope,'WAV:POIN 2000');
 fprintf(scope,':WAVEFORM:BYTEORDER LSBFirst');
 
 % Conduct experiment by sweeping waveform generator voltage
-V=[0:0.1:5, 4.9:-0.1:0, 0.1:0.1:5, 4.9:-0.1:0];
-N_volts = numel(V);
+V=[0:0.1:5
 countsPerSecond=zeros(1,N_volts);
 f=zeros(1,N_volts);
 
