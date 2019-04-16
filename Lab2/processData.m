@@ -1,9 +1,9 @@
 vSegment = V(1:51);
-fSegment = f(1:51)/60;
-countsPerSecondSegment = countsPerSecond(1:51)/60;
+fSegment = f(1:51)*60;
+countsPerSecondSegment = countsPerSecond(1:51)*60;
 
 for i = 1:length(fSegment)
-    if fSegment(i) > 10
+    if fSegment(i) > 500*60
         fSegment(i) = 0;
     end
 end
