@@ -19,8 +19,8 @@ void setup() {
   TCCR3B=0;
   TCCR3A=0b10000010; // Initialize Timer/Counter Control Register 3A
   TCCR3B=0b00010010; // Initialize Timer/Counter Control Register 3B
-  ICR3=2000; // TOP 3
-  OCR3A=600;
+  ICR3=1000; // TOP 3
+  OCR3A=300;
   TCNT3=0; // Reset counter 3
 
   // Phase and Frequency Corrected PWM - Using Pin 6
@@ -28,8 +28,8 @@ void setup() {
   TCCR4B=0;
   TCCR4A=0b10000000; // Initialize Timer/Counter Control Register 4A
   TCCR4B=0b00010010; // Initialize Timer/Counter Control Register 4B
-  ICR4=2000; // TOP 4
-  OCR4A=600;
+  ICR4=1000; // TOP 4
+  OCR4A=300;
   TCNT4=0; // Reset counter 4
 
   pinMode(fast_PWM_pin,OUTPUT);

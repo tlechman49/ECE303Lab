@@ -1,23 +1,29 @@
-int clk_pin = 2;
+int PC_PWM_pin = 5;
 
 void setup() {
-  pinMode(2,OUTPUT);
-  digitalWrite(clk_pin, LOW);
   noInterrupts();
-  TCCR3A=0; // Initializes all bits to zero in TCCR3A
-  TCCR3B=0; // Initializes all bits to zero in TCCR3B
-  TCNT3=0; // Initializes counter TCNT3 to 0
-  OCR3C=1999; // Set Output Compare Register 3C value 16mhz/(8*1000) - 1 = 1999
-  TCCR3B |= (1<<CS31) ; //Set prescalar to 8
-  TIMSK3 |=(1<<OCIE3C); // Enable timer 3 output compare flag
+
+  // Phase Corrected PWM - Using Pin 5
+  TCCR3A=0;
+  TCCR3B=0;
+  TCCR3A=0b10000010; // Initialize Timer/Counter Control Register 3A
+  TCCR3B=0b00010010; // Initialize Timer/Counter Control Register 3B
+  ICR3=1000; // TOP 3
+  OCR3A=500;
+  TCNT3=0; // Reset counter 3
+
+  pinMode(PC_PWM_pin,OUTPUT);
   interrupts();
+
 }
 
 void loop() {
   
 }
 
+
+
 ISR(TIMER3_COMPC_vect){
-  digitalWrite(clk_pin, !digitalRead(clk_pin));
+  
 }
 

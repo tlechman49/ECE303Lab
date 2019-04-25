@@ -11,13 +11,15 @@ fprintf(awg,'OUTP:LOAD INF'); % Place waveform generator into high-Z
 % Conduct experiment by sweeping waveform generator voltage
 Imeas = [];
 Vmeas = [];
-
+t = [];
+tic();
 while Vmeas(-1) > 4.8
     pause(1)
     voltage = str2num(query(DMM, 'MEAS:VOLT:DC?'));
     current = str2num(query(DMM, 'MEAS:CURR:DC?'));
     Vmeas = [Vmeas ; voltage];
     Imeas = [Imeas ; -current];
+    t = [t ; toc()];
 end
 
 % Close and delete instrument connections and objects
