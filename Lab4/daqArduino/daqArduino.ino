@@ -1,5 +1,6 @@
 #include "DHT.h"
 
+// pin definitions
 #define liquidSensor A3
 #define DHTPIN 8     // Digital pin connected to the DHT sensor
 #define BLUPIN 3
@@ -27,15 +28,17 @@ String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
 void setup() {
-  // put your setup code here, to run once:
+
   Serial.begin(9600);
   pinMode(liquidSensor, INPUT);
   pinMode(BLUPIN, OUTPUT);
   pinMode(REDPIN, OUTPUT);
   pinMode(WHTPIN, OUTPUT);
-  dht.begin();
-
+  pinMode(DHTPIN, INPUT);
+  pinMode(BUZPIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(CNTPIN), incrementCount, RISING);
+
+  dht.begin();
 
   noInterrupts();
   TCCR3A=0; // Initializes all bits to zero in TCCR3A
@@ -54,7 +57,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
   processSensors();
 
