@@ -1,12 +1,12 @@
 #include "DHT.h"
 
 #define liquidSensor A3
-#define DHTPIN 2     // Digital pin connected to the DHT sensor
+#define DHTPIN 8     // Digital pin connected to the DHT sensor
 #define BLUPIN 3
 #define REDPIN 4
 #define WHTPIN 5
 #define BUZPIN 6
-#define CNTPIN 8  //counts pulses from motor
+#define CNTPIN 2  //counts pulses from motor
 
 #define DHTTYPE DHT11   // DHT 11
 
@@ -83,7 +83,7 @@ void incrementCount() {
 }
 
 ISR(TIMER3_COMPC_vect){
-  countsPerSecond = 35;
+  countsPerSecond = count;
   count = 0;
 }
 
