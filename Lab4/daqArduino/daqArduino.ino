@@ -22,14 +22,18 @@ bool liquidAlarm = false;
 bool tempAlarm = false;
 
 volatile int count = 0;
-volatile int countsPerSecond = 0;
+volatile unsigned int countsPerSecond = 0;
+volatile int updateCtrl = 0;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
+char parsedData[8];
+
 void setup() {
 
   Serial.begin(9600);
+  Serial3.begin(9600);
   pinMode(liquidSensor, INPUT);
   pinMode(BLUPIN, OUTPUT);
   pinMode(REDPIN, OUTPUT);
@@ -77,7 +81,15 @@ void loop() {
     // clear the string:
     inputString = "";
     stringComplete = false;
-  } 
+  }
+
+   if (updateCtrl == 1)
+   {
+     updateCtrl = 0;
+     sprintf(parsedData,"%d.%d.%d",countsPerSecond, int(liquidAlarm), int(tempAlarm));
+     Serial3.println(parsedData);
+     Serial.println(parsedData);
+   }
 }
 
 void incrementCount() {
@@ -85,8 +97,9 @@ void incrementCount() {
 }
 
 ISR(TIMER3_COMPC_vect){
-  countsPerSecond = count;
+  countsPerSecond = 69;
   count = 0;
+  updateCtrl = 1;
 }
 
 void processSensors()
