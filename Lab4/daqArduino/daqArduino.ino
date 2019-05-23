@@ -8,11 +8,13 @@
 #define WHTPIN 5
 #define BUZPIN 6
 #define CNTPIN 2  //counts pulses from motor
+#define FANPIN 52
 
 #define DHTTYPE DHT11   // DHT 11
 
 #define MAX_9V_TEMP 25 //celcius
 #define MIN_WATER_LEVEL 100 
+#define MAXCOUNTS 160
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -40,6 +42,7 @@ void setup() {
   pinMode(WHTPIN, OUTPUT);
   pinMode(DHTPIN, INPUT);
   pinMode(BUZPIN, OUTPUT);
+  pinMode(FANPIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(CNTPIN), incrementCount, RISING);
 
   dht.begin();
@@ -86,6 +89,14 @@ void loop() {
    if (updateCtrl == 1)
    {
      updateCtrl = 0;
+     if (countsPerSecond > MAXCOUNTS/2)
+     {
+       digitalWrite(FANPIN, HIGH);
+     }
+     else
+     {
+       digitalWrite(FANPIN, LOW);
+     }
      sprintf(parsedData,"%d.%d.%d",countsPerSecond, int(liquidAlarm), int(tempAlarm));
      Serial3.println(parsedData);
      Serial.println(parsedData);
@@ -97,7 +108,7 @@ void incrementCount() {
 }
 
 ISR(TIMER3_COMPC_vect){
-  countsPerSecond = 69;
+  countsPerSecond = count;
   count = 0;
   updateCtrl = 1;
 }
@@ -124,10 +135,10 @@ void processSensors()
     }
   }
 
-  if (liquidLevel < MIN_WATER_LEVEL)
+  if (liquidLevel > MIN_WATER_LEVEL)
   {
     liquidLevel = analogRead(liquidSensor);
-    if (liquidLevel > MIN_WATER_LEVEL)
+    if (liquidLevel < MIN_WATER_LEVEL)
     {
       liquidAlarm = false;
     }
@@ -135,7 +146,7 @@ void processSensors()
   else
   {
     liquidLevel = analogRead(liquidSensor);
-    if (liquidLevel < MIN_WATER_LEVEL)
+    if (liquidLevel > MIN_WATER_LEVEL)
     {
       tone(BUZPIN, 500);
       delay(500);
