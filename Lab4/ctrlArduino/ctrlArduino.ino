@@ -35,14 +35,14 @@ void loop() {
     Serial.println(inputString);
 
     rpmAdjVal = inputString.toInt();
-    if (rpmAdjVal > 9600 || rpmAdjVal < 0)
+    if (rpmAdjVal > 300 || rpmAdjVal < 0)
     {
-      Serial.println("Value is incorrect. Must be between 0 and 9600.");
+      Serial.println("Value is incorrect. Must be between 0 and 300.");
     }
     else
     {
       rpmTarget = rpmAdjVal;
-      pwmSet = (float)rpmTarget*255/9600;
+      pwmSet = (float)rpmTarget*255/300;
     }
     // clear the string:
     inputString = "";
@@ -72,12 +72,12 @@ void loop() {
   }
   else
   {
-    int rpmVal = countsPerSecond * 60;
-    if (rpmVal-480 > rpmTarget && pwmSet > 0)
+    int rpmVal = countsPerSecond * 60 / 32;
+    if (rpmVal-480/32 > rpmTarget && pwmSet > 0)
     {
       pwmSet--;
     }
-    else if (rpmVal+480 < rpmTarget && pwmSet < 255)
+    else if (rpmVal+480/32 < rpmTarget && pwmSet < 255)
     {
       pwmSet++;
     }
