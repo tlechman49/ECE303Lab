@@ -1,6 +1,7 @@
 #define RPM_ADJ_IN_PIN 9
 #define RELAY_PIN 52
 
+#define DEBUGRPM
 int rpmAdjVal=0;
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
@@ -11,6 +12,8 @@ bool stringComplete3 = false;  // whether the string is complete
 int pwmSet = 0;
 int rpmTarget = 0;
 
+int isOn = 0;
+
 void setup() {  
   
   pinMode(RPM_ADJ_IN_PIN, OUTPUT);
@@ -18,7 +21,8 @@ void setup() {
 
   Serial.begin(9600);
   Serial3.begin(9600);
-  Serial.println("Hello World");
+  Serial.println();
+  Serial.println();
   
   // reserve 200 bytes for the inputString:
   inputString.reserve(200);
@@ -32,12 +36,12 @@ void loop() {
 
   if(stringComplete)
   {
-    Serial.println(inputString);
-
-    rpmAdjVal = inputString.toInt();
+    //Serial.println(inputString);
+    sscanf(inputString.c_str(), "%d.%d", &rpmAdjVal, &isOn);
+    //rpmAdjVal = inputString.toInt();
     if (rpmAdjVal > 300 || rpmAdjVal < 0)
     {
-      Serial.println("Value is incorrect. Must be between 0 and 300.");
+      //Serial.println("Value is incorrect. Must be between 0 and 300.");
     }
     else
     {
@@ -50,16 +54,29 @@ void loop() {
   }
   
   if (stringComplete3) {
-    Serial.println(inputString3);
+    //Serial.println(inputString3);
     
     char char_array[12];
+    char isOnState[17];
     strcpy(char_array, inputString3.c_str());
     int ret = sscanf(char_array, "%d.%d.%d", &countsPerSecond, &liquidAlarm, &tempAlarm); 
-    Serial.println(ret);
-    Serial.println(countsPerSecond);
-    Serial.println(liquidAlarm);
-    Serial.print("pwmSet: ");
-    Serial.println(pwmSet);
+    
+#ifdef DEBUGRPM
+    countsPerSecond = 100;
+    sprintf(isOnState,"%d.%d.%d.%d", isOn, countsPerSecond, liquidAlarm, tempAlarm);
+    Serial.println(isOnState);
+#else
+    sprintf(isOnState,"%d.", isOn);
+    char buf[100];
+    strcpy(buf, isOnState);
+    strcat(buf, char_array);
+    Serial.print(buf);
+#endif
+    //Serial.println(ret);
+    //Serial.println(countsPerSecond);
+    //Serial.println(liquidAlarm);
+    //Serial.print("pwmSet: ");
+    //Serial.println(pwmSet);
     
     // clear the string:
     inputString3 = "";
@@ -82,7 +99,7 @@ void loop() {
       pwmSet++;
     }
     analogWrite(RPM_ADJ_IN_PIN,pwmSet);
-    digitalWrite(RELAY_PIN, HIGH);
+    digitalWrite(RELAY_PIN, HIGH && isOn);
   }
   delay(100);
 }
