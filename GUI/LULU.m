@@ -5,7 +5,7 @@ batt_bins = [5.3852 5.5619 5.7674 5.9264 6.1138 6.2839 6.4414 6.7518 7.2364 8.33
 
 app = appGUI;
 
-s = serial('COM3', 'BaudRate', 9600);
+s = serial('COM66', 'BaudRate', 9600);
 set(s,'Terminator','CR/LF');
 fopen(s);
 
@@ -21,9 +21,9 @@ battPct = 0;
 mph = 0;
 rpm = 0;
 
-if(0)
+if(1)
     % Create equipment connections and objects
-    DMM=visa('agilent', 'USB0::0x2A8D::0xB318::MY58150015::0::INSTR');
+    DMM=visa('agilent', 'USB0::0x2A8D::0xB318::MY58230014::0::INSTR');
 
     % Open instruments 
     fopen(DMM);
@@ -33,6 +33,8 @@ if(0)
 else
     Vmeas = 8.5;
 end
+
+voltCounter = 11;
 %%
 
 tStart = 0;
@@ -40,11 +42,13 @@ while(1)
     % update the flags if there is a change
     %disp(fscanf(s));
     [readData,ret] = fscanf(s, '%d.%d.%d.%d'); 
-    if (ret ~= 4)
+    if (ret < 4)
         %do nothing
+        disp(ret);
+        disp(readData);
     elseif (isequal(lastReadData, readData))
         % do nothing!
-        %disp(readData);
+        disp(readData);
     else
         lastReadData = readData;
         disp(readData);
@@ -99,8 +103,12 @@ while(1)
     end
     
     %measure battery
-    if(0)
+    if(voltCounter > 2)
+        voltCounter = 0;
         Vmeas = str2num(query(DMM, 'MEAS:VOLT:DC?'));
+    else
+        voltCounter = voltCounter + 1;
+        pause(0.5);
     end
     battPct = 0;
     for i = 1:length(batt_bins)
@@ -112,7 +120,6 @@ while(1)
        end
     end
     app.BatteryLifeGauge.Value = battPct;
-    pause(0.5);
 end
 %%
 close all force;
