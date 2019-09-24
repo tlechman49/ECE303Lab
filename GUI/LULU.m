@@ -96,7 +96,6 @@ while(1)
         tStart = tic;
         totalDistance = totalDistance + tElapsed * mph / 3600.0;
         app.TotalDistancesmiTextArea.Value = sprintf('%f', totalDistance);
-        disp(totalDistance);
     end
     
     %measure battery

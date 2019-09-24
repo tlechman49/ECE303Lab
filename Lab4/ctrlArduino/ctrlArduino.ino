@@ -1,7 +1,7 @@
 #define RPM_ADJ_IN_PIN 9
 #define RELAY_PIN 52
 
-#define DEBUGRPM
+//#define DEBUGRPM
 int rpmAdjVal=0;
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete

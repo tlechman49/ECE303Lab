@@ -137,6 +137,7 @@ void processSensors()
 
   if (liquidLevel > MIN_WATER_LEVEL)
   {
+    delay(1);
     liquidLevel = analogRead(liquidSensor);
     if (liquidLevel < MIN_WATER_LEVEL)
     {
@@ -145,6 +146,7 @@ void processSensors()
   }
   else
   {
+    delay(1);
     liquidLevel = analogRead(liquidSensor);
     if (liquidLevel > MIN_WATER_LEVEL)
     {
